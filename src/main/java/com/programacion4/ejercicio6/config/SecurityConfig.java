@@ -28,14 +28,16 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                //ruta swagger
+                // rutas swagger (incluye swagger-config e index)
                 .requestMatchers(
-                        "/v3/api-docs",          // Ruta exacta
-                        "/v3/api-docs/**",       // Subrutas
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/swagger-resources/**", // Recursos internos
-                        "/webjars/**"            // Estilos visuales
+                    "/v3/api-docs",                // Ruta exacta
+                    "/v3/api-docs/**",             // Subrutas
+                    "/v3/api-docs/swagger-config", // Configuración usada por Swagger UI
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/index.html",
+                    "/swagger-resources/**",       // Recursos internos
+                    "/webjars/**"                  // Estilos y scripts
                 ).permitAll()
                 
                 .requestMatchers("/h2-console/**").permitAll()
