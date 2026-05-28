@@ -7,16 +7,16 @@ public class AuthDTO {
 
     @Data @Builder @AllArgsConstructor @NoArgsConstructor
     public static class RegisterRequest {
-        @NotBlank(message = "El nombre de usuario es obligatorio")
+        @NotBlank(message ="{auth.username.vacio}")
         private String username;
-        @NotBlank(message = "La contraseña es obligatoria")
+        @NotBlank(message = "{auth.password.vacio}")
         private String password;
     }
 
     @Data @Builder @AllArgsConstructor @NoArgsConstructor
     public static class LoginRequest {
-        @NotBlank private String username;
-        @NotBlank private String password;
+         @NotBlank(message ="{auth.username.vacio}") private String username;
+        @NotBlank(message = "{auth.password.vacio}") private String password;
     }
 
     @Data @Builder @AllArgsConstructor @NoArgsConstructor

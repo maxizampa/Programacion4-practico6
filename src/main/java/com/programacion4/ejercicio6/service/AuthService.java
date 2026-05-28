@@ -1,6 +1,7 @@
 package com.programacion4.ejercicio6.service;
 
 import com.programacion4.ejercicio6.dto.AuthDTO.*;
+
 import com.programacion4.ejercicio6.model.Usuario;
 import com.programacion4.ejercicio6.repository.UsuarioRepository;
 import com.programacion4.ejercicio6.security.JwtService;
@@ -20,14 +21,23 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse registrar(RegisterRequest request) {
-        var user = Usuario.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .rol("ROLE_PACIENTE") // Req 2: Rol por defecto asignado al registrarse
-                .build();
-        user = usuarioRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        return AuthResponse.builder().token(jwtToken).build();
+    
+    if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {
+        throw new IllegalArgumentException("El nombre de usuario ya está en uso");
+    }
+    //habria que envolver el usuario en un objeto? ver
+    Usuario user = Usuario.builder()
+            .username(request.getUsername())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .rol("ROLE_PACIENTE")
+            .build();
+
+    // Guardado en h2
+    usuarioRepository.save(user);
+
+    // token
+    var jwtToken = jwtService.generateToken(user);
+    return AuthResponse.builder().token(jwtToken).build();
     }
 
     public AuthResponse login(LoginRequest request) {

@@ -15,15 +15,7 @@ public class TurnoService {
 
     private final TurnoRepository turnoRepository;
 
-    public List<TurnoDTO> findAll() {
-        return turnoRepository.findAll().stream()
-                .map(t -> TurnoDTO.builder()
-                        .id(t.getId())
-                        .fecha(t.getFecha())
-                        .pacienteUsername(t.getPacienteUsername())
-                        .medicoUsername(t.getMedicoUsername()).build())
-                .collect(Collectors.toList());
-    }
+    
 
     public TurnoDTO save(TurnoDTO dto) {
         Turno turno = Turno.builder()
@@ -31,19 +23,39 @@ public class TurnoService {
                 .pacienteUsername(dto.getPacienteUsername())
                 .medicoUsername(dto.getMedicoUsername())
                 .build();
+        
+        // Al guardar, el repository devuelve el objeto persistido, nunca nulo
         Turno guardado = turnoRepository.save(turno);
         dto.setId(guardado.getId());
         return dto;
     }
 
-    public void deleteById(Long id) {
-        turnoRepository.deleteById(id);
+    public List<TurnoDTO> findAll() {
+    return turnoRepository.findAll().stream()
+            .map(turno -> TurnoDTO.builder()
+                    .id(turno.getId())
+                    .fecha(turno.getFecha())
+                    .pacienteUsername(turno.getPacienteUsername())
+                    .medicoUsername(turno.getMedicoUsername())
+                    .build())
+            .collect(Collectors.toList());
     }
 
-    // metodo @PreAuthorize en el Controller
+    public void deleteById(Long id) {
+        // Verificamos antes de borrar para cumplir con la seguridad de tipos
+        if (id != null && turnoRepository.existsById(id)) {
+            turnoRepository.deleteById(id);
+        }
+    }
+
     public boolean isMedicoAsignado(Long turnoId, String medicoUsername) {
+        if (turnoId == null || medicoUsername == null) {
+            return false;
+        }
+        
+        // Uso de .map() para manejar el Optional de forma segura y funcional
         return turnoRepository.findById(turnoId)
-                .map(turno -> turno.getMedicoUsername().equals(medicoUsername))
+                .map(turno -> medicoUsername.equals(turno.getMedicoUsername()))
                 .orElse(false);
     }
 }

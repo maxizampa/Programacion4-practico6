@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity //habilita uso de @PreAuthorize en Controllers
+@EnableMethodSecurity //habilita uso de preauthorize en los controllers
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -28,21 +28,30 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Acceso Swagger
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                //ruta swagger
+                .requestMatchers(
+                        "/v3/api-docs",          // Ruta exacta
+                        "/v3/api-docs/**",       // Subrutas
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**", // Recursos internos
+                        "/webjars/**"            // Estilos visuales
+                ).permitAll()
+                
                 .requestMatchers("/h2-console/**").permitAll()
                 
-                // Endpoints autenticacion publico
+                //endpoint autenticacion publico
                 .requestMatchers("/api/auth/**").permitAll()
                 
-                // Filtro por rol
+                //filtro por rol
                 .requestMatchers(HttpMethod.GET, "/api/turnos").hasAnyRole("MEDICO", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/pacientes/me").hasRole("PACIENTE")
                 
-                // Cualquier otro pedido
+                
+                .anyRequest().authenticated()
             );
 
-        // permitir renderizar la consola de la base de datos H2
+        // consola h2
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
         
         http.authenticationProvider(authenticationProvider);

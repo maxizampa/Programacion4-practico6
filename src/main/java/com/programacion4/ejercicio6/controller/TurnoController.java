@@ -2,6 +2,7 @@ package com.programacion4.ejercicio6.controller;
 
 import com.programacion4.ejercicio6.dto.TurnoDTO;
 import com.programacion4.ejercicio6.service.TurnoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class TurnoController {
     // Req 5: Solo un PACIENTE puede crear un turno para sí mismo
     @PostMapping
     @PreAuthorize("hasRole('PACIENTE') and #dto.pacienteUsername == authentication.name")
-    public ResponseEntity<TurnoDTO> createTurno(@RequestBody TurnoDTO dto) {
+    public ResponseEntity<TurnoDTO> createTurno(@Valid @RequestBody TurnoDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(turnoService.save(dto));
     }
 

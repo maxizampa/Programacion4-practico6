@@ -16,8 +16,8 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     /**
-     * 1. Captura fallos de validación en los DTOs (@Valid / @Validated)
-     * Cuando una validación falla, devuelve un 400 Bad Request junto con un mapa ordenado: { "campo": "mensaje" }
+     * 1. Captura errores de validación en DTOs (@Valid)
+     * Retorna un mapa estructurado { "campo": "mensaje de error" } con un HTTP 400 Bad Request
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -25,9 +25,11 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            // Validamos que no insertemos claves o mensajes nulos en el mapa
+            errors.put(fieldName != null ? fieldName : "error", errorMessage != null ? errorMessage : "Dato inválido");
         });
-        return ResponseEntity.status(HttpStatus.BAD_EMPTY == null ? HttpStatus.BAD_REQUEST : HttpStatus.BAD_REQUEST).body(errors);
+        // CORREGIDO: Usamos HttpStatus.BAD_REQUEST de forma limpia
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     /**
