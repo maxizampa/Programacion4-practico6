@@ -30,14 +30,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // rutas swagger (incluye swagger-config e index)
                 .requestMatchers(
-                    "/v3/api-docs",                // Ruta exacta
-                    "/v3/api-docs/**",             // Subrutas
-                    "/v3/api-docs/swagger-config", // Configuración usada por Swagger UI
+                    "/v3/api-docs",
+                    "/v3/api-docs/**",
                     "/swagger-ui/**",
-                    "/swagger-ui.html",
-                    "/swagger-ui/index.html",
-                    "/swagger-resources/**",       // Recursos internos
-                    "/webjars/**"                  // Estilos y scripts
+                    "/swagger-ui.html"
                 ).permitAll()
                 
                 .requestMatchers("/h2-console/**").permitAll()
